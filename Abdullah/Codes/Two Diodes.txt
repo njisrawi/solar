@@ -1,0 +1,61 @@
+from scipy.constants import e, k
+from pylab import plot, show, xlabel, ylabel, title, grid
+
+# Constants
+q = e
+kB = k
+
+# Parameters
+Iph = 4.85e-5 # Amps
+I01 = 1.5e-5 # Amps
+I02 = 2.4e-7 # Amps
+n1 = 2.4
+n2 = 9.5
+Rs = 0. # Ohms
+Rp1 = 1.0e8 # Ohms
+Rp2 = 4.6e4 # Ohms
+T = 300. # K
+
+# Calculations
+x1_axis = []
+x2_axis = []
+y_axis = []
+
+for j in range(1001) :
+    I = -5.5e-5+j*5.6e-5/1000
+    y_axis.append(I*1000)
+    
+    # Original Exact Expression
+    z1 = (q/(n1*kB*T)) * I01*Rp1 * ((q/(n1*kB*T))*Rp1*(I+Iph+I01)).exp()
+    w1 = lambert_w(z1)
+    z2 = q/(n2*kB*T)*I02*Rp2* (-q/(n2*kB*T)*Rp2*(I-I02)).exp()
+    w2 = lambert_w(z2)
+    V1 = (I+Iph+I01)*Rp1 \
+        - (n1*kB*T)/q*w1 \
+        + (n2*kB*T)/q*w2 \
+        + (I-I02)*Rp2 + I*Rs
+    
+    # Manipulated Exact Expression
+    a1 = q/(n1*kB*T)*I01*Rp1
+    x1 = a1.log() + q/(n1*kB*T)*Rp1*(I+Iph+I01)
+    g1 = log(lambert_w(x1.exp()))
+    a2 = q/(n2*kB*T)*I02*Rp2
+    x2 = a2.log() - q/(n2*kB*T)*Rp2*(I-I02)
+    g2 = log(lambert_w(x2.exp()))
+    V2 = I*Rs \
+        + (n1*kB*T)/q*g1 - (n2*kB*T)/q*g2 \
+        - (n1*kB*T)/q*(q/(n1*kB*T)*I01*Rp1).log() \
+        + (n2*kB*T)/q*(q/(n2*kB*T)*I02*Rp2).log()
+    
+    x1_axis.append(V1)
+    x2_axis.append(V2)
+
+# Ploting
+#plot(x1_axis,y_axis,"b-")
+plot(x2_axis,y_axis,"r-")
+title('I-V Characteristics For The Two Diode Model Example')
+xlabel('V (volts)')
+ylabel('I (mA)')
+grid(True)
+show()
+

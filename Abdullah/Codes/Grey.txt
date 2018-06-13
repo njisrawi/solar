@@ -1,0 +1,37 @@
+from scipy.constants import e, k
+from pylab import plot, show, xlabel, ylabel, title, grid
+
+# Constants
+q = e
+kB = k
+
+# Conditions (Grey solar cell)
+Iph = 0.5610 # Amps
+I0 = 5.514E-6 # Amps
+n = 1.7225
+Rs = 0.07769 # Ohms
+Rp = 25.9 # Ohms
+T = 307 # K
+
+# Calculations
+x_axis = []
+y_axis = []
+
+for j in range(1001) :
+    I = -0.58+j*0.58/1000
+    y_axis.append(I)
+    a = (q/(n*kB*T)) * I0 * Rp
+    x = a.log() + (q/(n*kB*T)) * Rp * (I+Iph+I0)
+    g = log(lambert_w(x.exp()))
+    V =  + I*Rs \
+         + ((n*kB*T)/q) * g \
+         - ((n*kB*T)/q) * log( (q/(n*kB*T)) * I0 * Rp )
+    x_axis.append(V)
+
+# Ploting
+plot(x_axis,y_axis,"r-")
+title('I-V Characteristics For The Grey Solar Cell Example')
+xlabel('V (volts)')
+ylabel('I (amps)')
+grid(True)
+show()
